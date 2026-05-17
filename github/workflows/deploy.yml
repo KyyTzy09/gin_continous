@@ -1,4 +1,4 @@
-name: CI/CD Hono Railway
+name: GIN CI/CD
 
 on:
   push:
