@@ -1,0 +1,39 @@
+name: CI/CD Hono Railway
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      # 3. Install dependencies
+      - name: Install Dependencies
+        run: go mod tidy
+
+      # 4. Build project
+      - name: Run Build
+        run: go build -o app .
+
+      # 5. Deploy to Railway
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.TOKEN }}
+          RAILWAY_SERVICE_ID: ${{ secrets.SERVICE_ID }}
+        run: |
+          npm install -g @railway/cli
+          railway up --detach --service $RAILWAY_SERVICE_ID
